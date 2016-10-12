@@ -84,16 +84,32 @@ class PhotosViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.userNameLabel.text = user["username"] as? String
         cell.avatarImageView.setImageWith(URL(string: user["profile_picture"] as! String)!)
         
+        
+        
         return cell
     }
     /*
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     */
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
+        
+        let indexPath = self.tableView.indexPathForSelectedRow
+        
+        let image = self.photos[(indexPath?.row)!]["images"] as! NSDictionary
+        let lowResolution = image["low_resolution"] as! NSDictionary
+
+        let nextVC = segue.destination as! PhotoDetailsViewController
+        
+        nextVC.photoURL = lowResolution["url"] as! String
+        
+        
+        
+        
     }
-    */
+    
 
 }
