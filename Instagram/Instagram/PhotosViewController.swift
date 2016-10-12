@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AFNetworking
 
 class PhotosViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -15,9 +16,7 @@ class PhotosViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     
     let refreshControl = UIRefreshControl()
-    
-    
-    var photos: [NSDictionary]?
+    var photos: [NSDictionary] = [NSDictionary]()
     
     
     override func viewDidLoad() {
@@ -27,11 +26,7 @@ class PhotosViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         self.tableView.delegate = self
         self.tableView.dataSource = self
-        
-        
-        
-        
-        
+        self.tableView.rowHeight = 320
         
         let userId = "435569061"
         let accessToken = "435569061.c66ada7.d12d19c8687e427591f254586e4f3e47"
@@ -54,6 +49,7 @@ class PhotosViewController: UIViewController, UITableViewDelegate, UITableViewDa
                             print("response: \(responseDictionary)")
                             if let photoData = responseDictionary["data"] as? [NSDictionary] {
                                 self.photos = photoData
+                                
                                 self.tableView.reloadData()
                                 self.refreshControl.endRefreshing()
                             }
@@ -71,11 +67,23 @@ class PhotosViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+        return self.photos.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell()
+        let cell = tableView.dequeueReusableCell(withIdentifier: "photoCell", for: indexPath) as! PhotoTableViewCell
+        
+        // user name
+        let user = self.photos[indexPath.row]["user"] as! NSDictionary
+        // photo
+        let image = self.photos[indexPath.row]["images"] as! NSDictionary
+        let lowResolution = image["low_resolution"] as! NSDictionary
+        
+        
+        cell.photoImageView.setImageWith(URL(string: lowResolution["url"] as! String)!)
+        cell.userNameLabel.text = user["username"] as? String
+        cell.avatarImageView.setImageWith(URL(string: user["profile_picture"] as! String)!)
+        
         return cell
     }
     /*
